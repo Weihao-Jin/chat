@@ -3,6 +3,7 @@ import user from './assets/user.svg'
 
 const form = document.querySelector('form')
 const chatContainer = document.querySelector('#chat_container')
+var context = ''
 
 let loadInterval
 
@@ -69,6 +70,7 @@ const handleSubmit = async (e) => {
 
     // user's chatstripe
     chatContainer.innerHTML += chatStripe(false, data.get('prompt'))
+    context += ('\nHuman:' + data.get('prompt'))
 
     // to clear the textarea input 
     form.reset()
@@ -92,7 +94,9 @@ const handleSubmit = async (e) => {
             'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-            prompt: data.get('prompt')
+            // prompt: data.get('prompt')
+            prompt: context
+
         })
     })
 
@@ -104,10 +108,12 @@ const handleSubmit = async (e) => {
         const parsedData = data.bot.trim() // trims any trailing spaces/'\n' 
 
         typeText(messageDiv, parsedData)
+        context += ("\nAI:" + parsedData)
     } else {
         const err = await response.text()
 
         messageDiv.innerHTML = "出错了...别担心，我们继续！"
+        context += ("\nAI:" + "出错了...别担心，我们继续！")
         alert(err)
     }
 }
